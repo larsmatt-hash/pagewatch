@@ -1,60 +1,54 @@
 import './style.css'
-import typescriptLogo from './assets/typescript.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import { setupCounter } from './counter.ts'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${typescriptLogo}" class="framework" alt="TypeScript logo"/>
-    <img src=${viteLogo} class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+const API_URL = import.meta.env.VITE_API_URL;
 
-<div class="ticks"></div>
+function App() {
+  return `
+    <div class="app">
+      <h1>PageWatch</h1>
+      <form id="pagewatch-form">
+        <div>
+          <label for="url">Website URL</label>
+          <input id="url" name="url" type="url" required />
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+        </div>
+        <button type="submit">Monitor Page</button>
+      </form>
+      <p id="message" class="message"></p>
+    </div>
+  `;
+}
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src=${viteLogo} alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://www.typescriptlang.org" target="_blank">
-          <img class="button-icon" src="${typescriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = App();
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+const form = document.querySelector<HTMLFormElement>('#pagewatch-form')!;
+const messageEl = document.querySelector<HTMLParagraphElement>('#message')!;
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const url = (document.querySelector<HTMLInputElement>('#url')!).value.trim();
+  const email = (document.querySelector<HTMLInputElement>('#email')!).value.trim();
+
+  try {
+    const response = await fetch(`${API_URL}/monitor`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, email }),
+    });
+
+    if (response.ok) {
+      messageEl.textContent = 'Monitor added';
+      (document.querySelector<HTMLInputElement>('#url')!).value = '';
+      (document.querySelector<HTMLInputElement>('#email')!).value = '';
+    } else {
+      messageEl.textContent = 'Error adding monitor';
+    }
+  } catch (error) {
+    console.error(error);
+    messageEl.textContent = 'Error adding monitor';
+  }
+});
