@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const port = 3001;
+const PORT = process.env.PORT || 3001;
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
@@ -88,6 +88,6 @@ setInterval(async () => {
   }
 }, 10 * 60 * 1000); // 10 minutes
 
-app.listen(port, () => {
-  console.log(`Backend listening at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
