@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [url, setUrl] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -9,7 +10,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/monitor', {
+      const response = await fetch(`${API_URL}/monitor`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

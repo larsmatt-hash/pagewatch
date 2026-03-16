@@ -57,6 +57,10 @@ app.get('/monitors', async (req, res) => {
   res.json(data);
 });
 
+app.get('/', (req, res) => {
+  res.json({"service":"PageWatch API", "status": "running"});
+});
+
 // Monitoring worker
 setInterval(async () => {
   const { data: monitors, error: fetchError } = await supabase
